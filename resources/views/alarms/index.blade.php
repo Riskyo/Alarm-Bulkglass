@@ -1,47 +1,58 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-white text-gray-900">
+<div class="relative min-h-screen bg-white text-gray-900">
+
+    {{-- 🔵 Gambar background di kiri bawah --}}
+    <img src="{{ asset('images/senyuminajah.jpg') }}"
+         alt="Background"
+         class="absolute bottom-0 left-0 w-32 opacity-10 pointer-events-none select-none hidden sm:block">
 
     {{-- 🟢 Jika BELUM ada pencarian → tampilkan search bar di tengah --}}
     @if(empty($search))
-        <div class="flex flex-col items-center justify-center min-h-screen">
-            <h1 class="text-4xl font-bold mb-8">Cari Kode Alarm</h1>
+        <div class="flex flex-col items-center justify-center min-h-screen px-4">
+            <h1 class="text-4xl font-bold mb-8 text-center">Cari Kode Alarm</h1>
+
             <form action="{{ route('alarms.index') }}" method="GET"
-                  class="w-full max-w-2xl mx-auto flex items-center border rounded-full shadow px-4 py-3">
-                <input type="text"
-                       name="search"
-                       placeholder="Masukkan kode atau deskripsi alarm..."
-                       autofocus
-                       class="flex-grow px-3 py-2 focus:outline-none text-lg">
+                  class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-3xl">
+                {{-- Input di dalam border --}}
+                <div class="flex items-center w-full border rounded-full shadow px-4 py-3 bg-white">
+                    <input type="text"
+                           name="search"
+                           placeholder="Masukkan kode atau deskripsi alarm..."
+                           autofocus
+                           class="flex-grow px-3 py-2 focus:outline-none text-lg rounded-full">
+                </div>
+
+                {{-- Tombol search di luar border --}}
                 <button type="submit"
-                        class="bg-blue-600 text-white px-8 py-2 rounded-full hover:bg-blue-700">
+                        class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition shadow w-full sm:w-auto">
                     Search
                 </button>
-                <a href="{{ route('alarms.create') }}"
-                   class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 rounded-full">
-                    Tambah
-                </a>
             </form>
         </div>
     @else
         {{-- 🟡 Jika SUDAH ada pencarian → tampilkan search bar di atas tabel --}}
-        <div class="container mx-auto p-6">
-            {{-- Search bar atas --}}
+        <div class="container mx-auto p-6 relative z-10">
             <form action="{{ route('alarms.index') }}" method="GET"
-                  class="w-full max-w-2xl mb-6 flex items-center border rounded-full shadow px-4 py-3 mx-auto">
-                <input type="text"
-                       name="search"
-                       value="{{ $search }}"
-                       placeholder="Masukkan kode atau deskripsi alarm..."
-                       class="flex-grow px-3 py-2 focus:outline-none text-lg">
+                  class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-3xl mx-auto mb-6">
+                {{-- Input di dalam border --}}
+                <div class="flex items-center w-full border rounded-full shadow px-4 py-3 bg-white">
+                    <input type="text"
+                           name="search"
+                           value="{{ $search }}"
+                           placeholder="Masukkan kode atau deskripsi alarm..."
+                           class="flex-grow px-3 py-2 focus:outline-none text-lg rounded-full">
+                </div>
+
+                {{-- Tombol search di luar border --}}
                 <button type="submit"
-                        class="bg-blue-600 text-white px-8 py-2 rounded-full hover:bg-blue-700">
+                        class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition shadow w-full sm:w-auto">
                     Search
                 </button>
             </form>
 
-            <h1 class="text-2xl font-semibold mb-4">Hasil Pencarian: "{{ $search }}"</h1>
+            <h1 class="text-2xl font-semibold mb-4 text-center sm:text-left">Hasil Pencarian: "{{ $search }}"</h1>
 
             <div class="overflow-x-auto">
                 <table class="min-w-full border">
@@ -75,7 +86,6 @@
                                     <td class="p-2 border text-gray-400" colspan="4">Belum ada action</td>
                                     @can('isAdmin')
                                         <td class="p-2 border text-center">
-                                            {{-- tambahkan parameter search --}}
                                             <a href="{{ route('alarms.edit', ['alarm' => $alarm->id, 'search' => request('search')]) }}" class="text-blue-700 underline">Edit</a>
                                             <form action="{{ route('alarms.destroy', ['alarm' => $alarm->id, 'search' => request('search')]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus data ini?')">
                                                 @csrf @method('DELETE')
