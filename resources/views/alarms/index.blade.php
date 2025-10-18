@@ -24,11 +24,19 @@
                            class="flex-grow px-3 py-2 focus:outline-none text-lg rounded-full">
                 </div>
 
-                {{-- Tombol search di luar border --}}
+                {{-- Tombol search --}}
                 <button type="submit"
                         class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition shadow w-full sm:w-auto">
                     Search
                 </button>
+
+                {{-- Tombol add --}}
+                @can('isAdmin')
+                <a href="{{ route('alarms.create') }}"
+                   class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition shadow w-full sm:w-auto text-center">
+                    Add
+                </a>
+                @endcan
             </form>
         </div>
     @else
@@ -45,11 +53,19 @@
                            class="flex-grow px-3 py-2 focus:outline-none text-lg rounded-full">
                 </div>
 
-                {{-- Tombol search di luar border --}}
+                {{-- Tombol search --}}
                 <button type="submit"
                         class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition shadow w-full sm:w-auto">
                     Search
                 </button>
+
+                {{-- Tombol add --}}
+                @can('isAdmin')
+                <a href="{{ route('alarms.create') }}"
+                   class="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition shadow w-full sm:w-auto text-center">
+                    + Add
+                </a>
+                @endcan
             </form>
 
             <h1 class="text-2xl font-semibold mb-4 text-center sm:text-left">Hasil Pencarian: "{{ $search }}"</h1>

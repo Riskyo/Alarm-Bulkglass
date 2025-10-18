@@ -1,25 +1,26 @@
 <nav class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
+            <!-- 🔵 Logo + Title -->
+            <div class="flex items-center">
                 <div class="shrink-0 flex items-center">
-                    <!-- tambahkan logo jika perlu -->
+                    <a href="{{ route('alarms.index') }}" class="text-lg font-bold text-gray-700 hover:text-blue-600 transition">
+                        ALARM BULKGLASS
+                    </a>
                 </div>
 
-                <!-- Navigation Links (Desktop) -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <!-- 🟢 Desktop Navigation -->
+                <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
                     <x-nav-link :href="route('alarms.index')" :active="request()->routeIs('alarms.index')">
                         {{ __('Alarms') }}
                     </x-nav-link>
                 </div>
             </div>
 
-            <!-- Desktop Dropdown -->
+            <!-- 🟠 Desktop User Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 relative">
                 <button id="desktop-dropdown-btn"
-                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none">
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-600 bg-white hover:text-gray-800 focus:outline-none">
                     <div>{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
                     <svg class="ms-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 20 20">
@@ -28,7 +29,7 @@
                     </svg>
                 </button>
 
-                <div id="desktop-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden">
+                <div id="desktop-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden z-50">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
@@ -39,10 +40,10 @@
                 </div>
             </div>
 
-            <!-- Hamburger Button (Mobile) -->
-            <div class="-me-2 flex items-center sm:hidden">
+            <!-- 🟡 Mobile Hamburger -->
+            <div class="flex items-center sm:hidden">
                 <button id="hamburger-btn"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                    class="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path id="hamburger-icon" class="inline-flex"
                             stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -56,26 +57,20 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div id="mobile-menu" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
+    <!-- 🔻 Mobile Menu -->
+    <div id="mobile-menu" class="hidden sm:hidden bg-white border-t border-gray-200">
+        <div class="pt-2 pb-3">
             <x-nav-link :href="route('alarms.index')" :active="request()->routeIs('alarms.index')"
                 class="block px-4 py-2">
                 {{ __('Alarms') }}
             </x-nav-link>
         </div>
 
-        <!-- Mobile Settings -->
         <div class="border-t border-gray-200 bg-gray-50">
             <div class="px-4 py-3">
                 <button id="mobile-dropdown-btn" class="font-medium text-base text-gray-800 w-full text-left">
                     {{ Auth::check() ? Auth::user()->name : 'Guest' }}
                 </button>
-                @if(Auth::check())
-                    <div class="font-medium text-sm text-gray-500">
-                        {{ Auth::user()->email }}
-                    </div>
-                @endif
             </div>
 
             <div id="mobile-dropdown-menu" class="hidden border-t border-gray-200">
@@ -91,7 +86,7 @@
     </div>
 </nav>
 
-<!-- JavaScript -->
+<!-- ⚙️ JS Toggle Menu -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const hamburgerBtn = document.getElementById('hamburger-btn');
@@ -122,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         desktopDropdownMenu.classList.toggle('hidden');
     });
 
-    // Klik di luar menu untuk menutup dropdown desktop
+    // Klik di luar dropdown untuk menutup
     document.addEventListener('click', function(e) {
         if (!desktopDropdownBtn.contains(e.target) && !desktopDropdownMenu.contains(e.target)) {
             desktopDropdownMenu.classList.add('hidden');
