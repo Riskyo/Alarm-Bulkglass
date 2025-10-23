@@ -8,13 +8,6 @@
                         ALARM BULKGLASS
                     </a>
                 </div>
-
-                <!-- 🟢 Desktop Navigation -->
-                <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
-                    <x-nav-link :href="route('alarms.index')" :active="request()->routeIs('alarms.index')">
-                        {{ __('Alarms') }}
-                    </x-nav-link>
-                </div>
             </div>
 
             <!-- 🟠 Desktop User Dropdown -->
