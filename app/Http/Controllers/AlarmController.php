@@ -5,16 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Alarm;
 use App\Models\Action;
 use App\Models\Sensor;
+use App\Models\Visitor;
+use App\Models\SearchLog;
 use Illuminate\Http\Request;
 
 class AlarmController extends Controller
 {
-    // Publik: lihat & cari
+    // 🟢 Publik: lihat & cari
     public function index(Request $request)
     {
+        $ip = $request->ip();
+
+        // ✅ Catat IP unik ke tabel visitors
+        if (!Visitor::where('ip_address', $ip)->exists()) {
+            Visitor::create(['ip_address' => $ip]);
+        }
+
+        // ✅ Hitung total visitor unik
+        $visitorCount = Visitor::count();
+
+        // ✅ Ambil parameter pencarian dan urutan
         $search = trim((string)$request->input('search'));
         $sort   = $request->input('sort', 'asc');
 
+        // ✅ Ambil data alarm (pencarian pada code_alarm dan description)
         $alarms = Alarm::with('actions.sensors')
             ->when($search, function ($q) use ($search) {
                 $q->where('code_alarm', 'like', "%{$search}%")
@@ -24,14 +38,32 @@ class AlarmController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('alarms.index', compact('alarms', 'search', 'sort'));
+        // ✅ Simpan ke search log hanya jika hasil ditemukan dan pencarian tidak kosong
+        if ($search !== '' && $alarms->total() > 0) {
+            SearchLog::create([
+                'query'      => $search,
+                'ip_address' => $ip,
+            ]);
+        }
+
+        // ✅ Ambil 5 pencarian paling sering (untuk semua user)
+        $mostSearched = SearchLog::select('query')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('query')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        return view('alarms.index', compact('alarms', 'search', 'sort', 'visitorCount', 'mostSearched'));
     }
 
+    // 🟢 Buat alarm baru
     public function create()
     {
         return view('alarms.create');
     }
 
+    // 🟢 Simpan alarm baru
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -44,7 +76,6 @@ class AlarmController extends Controller
             'actions.*.sensors.*.komponen'    => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
         ]);
 
-        // pastikan selalu 3 digit, contoh: 1 -> 001
         $codeAlarm = str_pad($validated['code_alarm'], 3, '0', STR_PAD_LEFT);
 
         $alarm = Alarm::create([
@@ -72,12 +103,14 @@ class AlarmController extends Controller
         return redirect()->route('alarms.index')->with('success', 'Data alarm ditambahkan.');
     }
 
+    // 🟢 Edit alarm
     public function edit(Alarm $alarm)
     {
         $alarm->load('actions.sensors');
         return view('alarms.edit', compact('alarm'));
     }
 
+    // 🟢 Update alarm
     public function update(Request $request, Alarm $alarm)
     {
         $validated = $request->validate([
@@ -90,7 +123,6 @@ class AlarmController extends Controller
             'actions.*.sensors.*.komponen'    => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
         ]);
 
-        // tetap simpan 3 digit
         $codeAlarm = str_pad($validated['code_alarm'], 3, '0', STR_PAD_LEFT);
 
         $alarm->update([
@@ -98,9 +130,10 @@ class AlarmController extends Controller
             'description' => $validated['description'],
         ]);
 
-        // Hapus semua actions lama lalu simpan ulang
+        // Hapus semua action lama
         $alarm->actions()->delete();
 
+        // Buat ulang semua action dan sensor
         foreach ($validated['actions'] as $i => $actionData) {
             $action = $alarm->actions()->create([
                 'action_text' => $actionData['action_text'],
@@ -122,9 +155,10 @@ class AlarmController extends Controller
             }
         }
 
-        return redirect()->route('alarms.index')->with('success','Data alarm diperbarui.');
+        return redirect()->route('alarms.index')->with('success', 'Data alarm diperbarui.');
     }
 
+    // 🟢 Hapus alarm
     public function destroy(Alarm $alarm)
     {
         $alarm->delete();

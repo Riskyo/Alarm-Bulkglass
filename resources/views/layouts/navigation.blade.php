@@ -11,14 +11,23 @@
 
                 <!-- 🟢 Desktop Navigation -->
                 <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
-                    <x-nav-link :href="route('alarms.index')" :active="request()->routeIs('alarms.index')">
-                        {{ __('Alarms') }}
-                    </x-nav-link>
+                    <button onclick="startTutorial()"
+                        class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
+                        {{ __('Show Tutorial') }}
+                    </button>
                 </div>
             </div>
 
             <!-- 🟠 Desktop User Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 relative">
+                @can('isAdmin')
+                    @isset($visitorCount)
+                        <div class="flex items-center text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-lg shadow-sm mr-3">
+                            👁️ <span class="ml-1 font-semibold">{{ $visitorCount }}</span>
+                        </div>
+                    @endisset
+                @endcan
+
                 <button id="desktop-dropdown-btn"
                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-600 bg-white hover:text-gray-800 focus:outline-none">
                     <div>{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
@@ -60,10 +69,9 @@
     <!-- 🔻 Mobile Menu -->
     <div id="mobile-menu" class="hidden sm:hidden bg-white border-t border-gray-200">
         <div class="pt-2 pb-3">
-            <x-nav-link :href="route('alarms.index')" :active="request()->routeIs('alarms.index')"
-                class="block px-4 py-2">
-                {{ __('Alarms') }}
-            </x-nav-link>
+            <button onclick="startTutorial()" class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
+                {{ __('Show Tutorial') }}
+            </button>
         </div>
 
         <div class="border-t border-gray-200 bg-gray-50">
