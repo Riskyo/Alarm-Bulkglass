@@ -6,13 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Action extends Model
 {
-    protected $fillable = ['alarm_id','action_text'];
+    protected $fillable = [
+        'alarm_id',
+        'action_text',
+        'machine_type',
+    ];
 
-    public function alarm() {
+    public function alarm()
+    {
         return $this->belongsTo(Alarm::class);
     }
 
-    public function sensors() {
+    public function sensors()
+    {
         return $this->hasMany(Sensor::class);
     }
 }

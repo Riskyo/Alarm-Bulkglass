@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Alarm extends Model
 {
     protected $fillable = [
+        'machine_type',
         'code_alarm',
         'description',
     ];
@@ -15,6 +16,8 @@ class Alarm extends Model
     {
         return $this->hasMany(Action::class);
     }
+
+    // Optional: jumlah actions
     public function getStepAttribute()
     {
         return $this->actions->count();

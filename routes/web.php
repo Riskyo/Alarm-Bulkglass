@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlarmController;
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\SensorController;
+use App\Http\Controllers\PdfController; // ⬅ WAJIB ditambahkan
 use Illuminate\Support\Facades\Route;
 
 // =========================
@@ -10,9 +11,14 @@ use Illuminate\Support\Facades\Route;
 // =========================
 Route::get('/', [AlarmController::class, 'index'])->name('alarms.index');
 
-// kalau memang tidak ada detail satu alarm khusus, baris show ini cukup dikomentari saja
-// Route::get('/alarms/{alarm}', [AlarmController::class, 'show'])->name('alarms.show');
+// =========================
+// PDF LIST – boleh diakses semua user
+// =========================
+Route::get('/pdf', [PdfController::class, 'index'])->name('pdf.index');
 
+// =========================
+// Route auth login / register
+// =========================
 require __DIR__.'/auth.php';
 
 // =========================
@@ -30,4 +36,13 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     // nested: tambah sensor baru pada action tertentu
     Route::post('actions/{action}/sensors', [SensorController::class, 'store'])
          ->name('sensors.store');
+
+    // =========================
+    // CRUD PDF (hanya admin)
+    // =========================
+    Route::get('/pdf/create', [PdfController::class, 'create'])->name('pdf.create');
+    Route::post('/pdf', [PdfController::class, 'store'])->name('pdf.store');
+    Route::get('/pdf/{pdf}/edit', [PdfController::class, 'edit'])->name('pdf.edit');
+    Route::put('/pdf/{pdf}', [PdfController::class, 'update'])->name('pdf.update');
+    Route::delete('/pdf/{pdf}', [PdfController::class, 'destroy'])->name('pdf.destroy');
 });

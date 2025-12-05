@@ -1,25 +1,45 @@
+@php
+    // Deteksi apakah halaman sekarang adalah create/edit
+    $hideTutorial = request()->is('alarms/create')
+                    || request()->is('alarms/*/edit')
+                    || request()->is('pdf/create')
+                    || request()->is('pdf/*/edit');
+@endphp
+
 <nav class="bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
+
             <!-- 🔵 Logo + Title -->
             <div class="flex items-center">
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('alarms.index') }}" class="text-lg font-bold text-gray-700 hover:text-blue-600 transition">
-                        ALARM BULKGLASS
-                    </a>
-                </div>
+                <a href="{{ route('alarms.index') }}"
+                    class="text-lg font-bold text-gray-700 hover:text-blue-600 transition">
+                    MARIN ALARMS
+                </a>
 
                 <!-- 🟢 Desktop Navigation -->
                 <div class="hidden sm:flex sm:space-x-8 sm:ms-10">
-                    <button onclick="startTutorial()"
+
+                    <!-- ⬅️ List PDF sekarang di depan -->
+                    <a href="{{ route('pdf.index') }}"
                         class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
-                        {{ __('Show Tutorial') }}
-                    </button>
+                        List PDF
+                    </a>
+
+                    <!-- ⬅️ Show Tutorial hanya tampil jika bukan create/edit -->
+                    @unless($hideTutorial)
+                        <button onclick="startTutorial()"
+                            class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
+                            {{ __('Show Tutorial') }}
+                        </button>
+                    @endunless
+
                 </div>
             </div>
 
             <!-- 🟠 Desktop User Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 relative">
+
                 @can('isAdmin')
                     @isset($visitorCount)
                         <div class="flex items-center text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-lg shadow-sm mr-3">
@@ -29,16 +49,16 @@
                 @endcan
 
                 <button id="desktop-dropdown-btn"
-                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-600 bg-white hover:text-gray-800 focus:outline-none">
+                    class="inline-flex items-center px-3 py-2 border text-sm rounded-md text-gray-600 bg-white hover:text-gray-800">
                     <div>{{ Auth::check() ? Auth::user()->name : 'Guest' }}</div>
-                    <svg class="ms-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 20 20">
+                    <svg class="ms-1 h-4 w-4" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" d="M6 8l4 4 4-4" />
                     </svg>
                 </button>
 
-                <div id="desktop-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden z-50">
+                <div id="desktop-dropdown-menu"
+                    class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden z-50">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
@@ -52,13 +72,13 @@
             <!-- 🟡 Mobile Hamburger -->
             <div class="flex items-center sm:hidden">
                 <button id="hamburger-btn"
-                    class="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none transition">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path id="hamburger-icon" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    class="p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                    <svg class="h-6 w-6" fill="none">
+                        <path id="hamburger-icon" class="inline-flex" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
                             d="M4 6h16M4 12h16M4 18h16" />
-                        <path id="close-icon" class="hidden"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        <path id="close-icon" class="hidden" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
                             d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -68,15 +88,29 @@
 
     <!-- 🔻 Mobile Menu -->
     <div id="mobile-menu" class="hidden sm:hidden bg-white border-t border-gray-200">
+
         <div class="pt-2 pb-3">
-            <button onclick="startTutorial()" class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
-                {{ __('Show Tutorial') }}
-            </button>
+
+            <!-- List PDF dulu -->
+            <a href="{{ route('pdf.index') }}"
+                class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
+                List PDF
+            </a>
+
+            <!-- Show Tutorial kecuali create/edit -->
+            @unless($hideTutorial)
+                <button onclick="startTutorial()"
+                    class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
+                    {{ __('Show Tutorial') }}
+                </button>
+            @endunless
+
         </div>
 
         <div class="border-t border-gray-200 bg-gray-50">
             <div class="px-4 py-3">
-                <button id="mobile-dropdown-btn" class="font-medium text-base text-gray-800 w-full text-left">
+                <button id="mobile-dropdown-btn"
+                    class="font-medium text-base text-gray-800 w-full text-left">
                     {{ Auth::check() ? Auth::user()->name : 'Guest' }}
                 </button>
             </div>
@@ -85,7 +119,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
-                        class="block w-full text-left px-4 py-2 text-red-600 font-semibold hover:bg-red-50 focus:bg-red-50">
+                        class="block w-full text-left px-4 py-2 text-red-600 font-semibold hover:bg-red-50">
                         {{ __('Log Out') }}
                     </button>
                 </form>
@@ -97,6 +131,7 @@
 <!-- ⚙️ JS Toggle Menu -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const hamburgerIcon = document.getElementById('hamburger-icon');
@@ -115,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
         closeIcon.classList.toggle('hidden');
     });
 
-    // Toggle mobile logout menu
+    // Toggle mobile dropdown
     mobileDropdownBtn.addEventListener('click', () => {
         mobileDropdownMenu.classList.toggle('hidden');
     });
@@ -125,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         desktopDropdownMenu.classList.toggle('hidden');
     });
 
-    // Klik di luar dropdown untuk menutup
+    // Klik luar dropdown menutup
     document.addEventListener('click', function(e) {
         if (!desktopDropdownBtn.contains(e.target) && !desktopDropdownMenu.contains(e.target)) {
             desktopDropdownMenu.classList.add('hidden');

@@ -17,6 +17,23 @@
     <form action="{{ route('alarms.update',$alarm) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf @method('PUT')
 
+        {{-- Machine Type --}}
+        <div>
+            <label class="block mb-1 font-medium">Machine Type</label>
+            <select name="machine_type" class="border rounded w-full px-3 py-2" required>
+            <option value="bulkglass" {{ $alarm->machine_type=='bulkglass'?'selected':'' }}>Bulkglass</option>
+            <option value="depalletiser" {{ $alarm->machine_type=='depalletiser'?'selected':'' }}>Depalletiser</option>
+            <option value="robocolumn" {{ $alarm->machine_type=='robocolumn'?'selected':'' }}>Robocolumn</option>
+            <option value="incarobot" {{ $alarm->machine_type=='incarobot'?'selected':'' }}>Incarobot</option>
+            <option value="paletizer" {{ $alarm->machine_type=='paletizer'?'selected':'' }}>Paletizer</option>
+            <option value="conveyor_b23" {{ $alarm->machine_type=='conveyor_b23'?'selected':'' }}>Conveyor B23</option>
+            <option value="conveyor_b17" {{ $alarm->machine_type=='conveyor_b17'?'selected':'' }}>Conveyor B17</option>
+            <option value="packer" {{ $alarm->machine_type=='packer'?'selected':'' }}>Packer</option>
+            <option value="unpacker" {{ $alarm->machine_type=='unpacker'?'selected':'' }}>Unpacker</option>
+            <option value="crate_magazine" {{ $alarm->machine_type=='crate_magazine'?'selected':'' }}>Crate Magazine</option>
+            </select>
+        </div>
+
         {{-- Code Alarm --}}
         <div>
             <label class="block mb-1 font-medium">Code Alarm</label>
@@ -33,10 +50,12 @@
 
         <hr class="my-4">
         <h3 class="text-xl font-semibold mb-2">Actions</h3>
+
         <div id="actions-wrapper" class="space-y-4">
             @foreach($alarm->actions as $i => $action)
             <div class="action-block border p-4 rounded">
-                {{-- hidden ID action --}}
+
+                {{-- Hidden ID Action --}}
                 <input type="hidden" name="actions[{{ $i }}][id]" value="{{ $action->id }}">
 
                 <div class="mb-3">
@@ -47,50 +66,77 @@
                 </div>
 
                 <h5 class="text-lg font-medium mb-2">Sensors</h5>
+
                 <div class="sensors-wrapper space-y-3">
-                    @forelse($action->sensors as $j => $sensor)
+                    @foreach($action->sensors as $j => $sensor)
                     <div class="sensor-block border p-3 rounded">
-                        {{-- hidden ID sensor --}}
+
+                        {{-- Hidden Sensor ID --}}
                         <input type="hidden" name="actions[{{ $i }}][sensors][{{ $j }}][id]" value="{{ $sensor->id }}">
 
+                        {{-- Sensor Name --}}
                         <div class="mb-2">
                             <label class="block mb-1">Nama Sensor</label>
-                            <input type="text" name="actions[{{ $i }}][sensors][{{ $j }}][sensor_name]"
+                            <input type="text"
+                                   name="actions[{{ $i }}][sensors][{{ $j }}][sensor_name]"
                                    value="{{ old("actions.$i.sensors.$j.sensor_name",$sensor->sensor_name) }}"
                                    class="border rounded w-full px-3 py-2">
                         </div>
 
+                        {{-- Komponen Upload --}}
                         <div class="mb-2">
                             <label class="block mb-1">Gambar Komponen</label>
-                            <input type="file" name="actions[{{ $i }}][sensors][{{ $j }}][komponen]" accept="image/*" class="border rounded w-full px-3 py-2">
+                            <input type="file"
+                                   name="actions[{{ $i }}][sensors][{{ $j }}][komponen]"
+                                   accept="image/*"
+                                   class="border rounded w-full px-3 py-2">
 
-                            {{-- simpan path lama agar tidak hilang --}}
-                            <input type="hidden" name="actions[{{ $i }}][sensors][{{ $j }}][komponen_old]" value="{{ $sensor->komponen }}">
+                            {{-- old komponen --}}
+                            <input type="hidden"
+                                   name="actions[{{ $i }}][sensors][{{ $j }}][komponen_old]"
+                                   value="{{ $sensor->komponen }}">
+
                             @if($sensor->komponen)
-                                <img src="{{ asset('storage/'.$sensor->komponen) }}" class="h-16 w-16 object-cover mt-1 border rounded">
+                                <img src="{{ asset('storage/'.$sensor->komponen) }}"
+                                     class="h-16 w-16 object-cover mt-1 border rounded">
                             @endif
-                        </div>  
-                    </div>
-                    @empty
-                    {{-- Kalau belum ada sensor sama sekali --}}
-                    <div class="sensor-block border p-3 rounded">
-                        <div class="mb-2">
-                            <label class="block mb-1">Nama Sensor</label>
-                            <input type="text" name="actions[{{ $i }}][sensors][0][sensor_name]" class="border rounded w-full px-3 py-2">
                         </div>
+
+                        {{-- PLC IO Upload --}}
                         <div class="mb-2">
-                            <label class="block mb-1">Gambar Komponen</label>
-                            <input type="file" name="actions[{{ $i }}][sensors][0][komponen]" accept="image/*" class="border rounded w-full px-3 py-2">
+                            <label class="block mb-1">PLC I/O (Opsional)</label>
+                            <input type="file"
+                                   name="actions[{{ $i }}][sensors][{{ $j }}][plc_io]"
+                                   accept="image/*"
+                                   class="border rounded w-full px-3 py-2">
+
+                            {{-- old plc_io --}}
+                            <input type="hidden"
+                                   name="actions[{{ $i }}][sensors][{{ $j }}][plc_old]"
+                                   value="{{ $sensor->plc_io }}">
+
+                            @if($sensor->plc_io)
+                                <img src="{{ asset('storage/'.$sensor->plc_io) }}"
+                                     class="h-16 w-16 object-cover mt-1 border rounded">
+                            @endif
                         </div>
+
                     </div>
-                    @endforelse
+                    @endforeach
                 </div>
-                <button type="button" class="mt-2 bg-gray-200 hover:bg-gray-300 text-sm px-3 py-1 rounded add-sensor-btn">+ Tambah Sensor</button>
+
+                <button type="button"
+                        class="mt-2 bg-gray-200 hover:bg-gray-300 text-sm px-3 py-1 rounded add-sensor-btn">
+                    + Tambah Sensor
+                </button>
+
             </div>
             @endforeach
         </div>
 
-        <button type="button" id="add-action" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">+ Tambah Action</button>
+        <button type="button" id="add-action" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">
+            + Tambah Action
+        </button>
 
         <div class="flex gap-2 mt-4">
             <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded">Update</button>
@@ -104,54 +150,91 @@ let actionIndex = {{ $alarm->actions->count() }};
 
 document.getElementById('add-action').addEventListener('click', function() {
     const wrapper = document.getElementById('actions-wrapper');
+
     const html = `
     <div class="action-block border p-4 rounded mt-3">
+
         <div class="mb-3">
             <label class="block mb-1">Teks Aksi</label>
             <input type="text" name="actions[${actionIndex}][action_text]" class="border rounded w-full px-3 py-2">
         </div>
+
         <h5 class="text-lg font-medium mb-2">Sensors</h5>
+
         <div class="sensors-wrapper space-y-3">
             <div class="sensor-block border p-3 rounded">
+
                 <div class="mb-2">
                     <label class="block mb-1">Nama Sensor</label>
-                    <input type="text" name="actions[${actionIndex}][sensors][0][sensor_name]" class="border rounded w-full px-3 py-2">
+                    <input type="text" name="actions[${actionIndex}][sensors][0][sensor_name]"
+                           class="border rounded w-full px-3 py-2">
                 </div>
+
                 <div class="mb-2">
                     <label class="block mb-1">Gambar Komponen</label>
-                    <input type="file" name="actions[${actionIndex}][sensors][0][komponen]" accept="image/*" class="border rounded w-full px-3 py-2">
+                    <input type="file" name="actions[${actionIndex}][sensors][0][komponen]"
+                           accept="image/*" class="border rounded w-full px-3 py-2">
                 </div>
+
+                <div class="mb-2">
+                    <label class="block mb-1">PLC I/O (Opsional)</label>
+                    <input type="file" name="actions[${actionIndex}][sensors][0][plc_io]"
+                           accept="image/*" class="border rounded w-full px-3 py-2">
+                </div>
+
             </div>
         </div>
-        <button type="button" class="mt-2 bg-gray-200 hover:bg-gray-300 text-sm px-3 py-1 rounded add-sensor-btn">+ Tambah Sensor</button>
+
+        <button type="button"
+                class="mt-2 bg-gray-200 hover:bg-gray-300 text-sm px-3 py-1 rounded add-sensor-btn">
+            + Tambah Sensor
+        </button>
+
     </div>
     `;
+
     wrapper.insertAdjacentHTML('beforeend', html);
     actionIndex++;
 });
 
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('add-sensor-btn')) {
+
         const actionBlock = e.target.closest('.action-block');
         const sensorsWrapper = actionBlock.querySelector('.sensors-wrapper');
-        const actionInput = actionBlock.querySelector('input[name^="actions"]');
-        const actionIdxMatch = actionInput.name.match(/actions\[(\d+)\]/);
-        const actionIdx = actionIdxMatch ? actionIdxMatch[1] : 0;
+
+        const actionIdx = actionBlock.querySelector('input[name^="actions"]')
+                            .name.match(/actions\[(\d+)\]/)[1];
+
         const sensorCount = sensorsWrapper.querySelectorAll('.sensor-block').length;
-        const sensorHtml = `
+
+        const html = `
         <div class="sensor-block border p-3 rounded">
+
             <div class="mb-2">
                 <label class="block mb-1">Nama Sensor</label>
-                <input type="text" name="actions[${actionIdx}][sensors][${sensorCount}][sensor_name]" class="border rounded w-full px-3 py-2">
+                <input type="text" name="actions[${actionIdx}][sensors][${sensorCount}][sensor_name]"
+                       class="border rounded w-full px-3 py-2">
             </div>
+
             <div class="mb-2">
                 <label class="block mb-1">Gambar Komponen</label>
-                <input type="file" name="actions[${actionIdx}][sensors][${sensorCount}][komponen]" accept="image/*" class="border rounded w-full px-3 py-2">
+                <input type="file" name="actions[${actionIdx}][sensors][${sensorCount}][komponen]"
+                       accept="image/*" class="border rounded w-full px-3 py-2">
             </div>
+
+            <div class="mb-2">
+                <label class="block mb-1">PLC I/O (Opsional)</label>
+                <input type="file" name="actions[${actionIdx}][sensors][${sensorCount}][plc_io]"
+                       accept="image/*" class="border rounded w-full px-3 py-2">
+            </div>
+
         </div>
         `;
-        sensorsWrapper.insertAdjacentHTML('beforeend', sensorHtml);
+
+        sensorsWrapper.insertAdjacentHTML('beforeend', html);
     }
 });
 </script>
+
 @endsection
