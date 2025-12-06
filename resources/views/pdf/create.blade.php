@@ -12,17 +12,14 @@
 
         <div>
             <label class="font-medium">Machine Type</label>
-            <select name="machine_type" class="border px-3 py-2 rounded w-full" required>
-            <option value="bulkglass">Bulkglass</option>
-            <option value="depalletiser">Depalletiser</option>
-            <option value="robocolumn">Robocolumn</option>
-            <option value="incarobot">Incarobot</option>
-            <option value="paletizer">Paletizer</option>
-            <option value="conveyor_b23">Conveyor B23</option>
-            <option value="conveyor_b17">Conveyor B17</option>
-            <option value="packer">Packer</option>
-            <option value="unpacker">Unpacker</option>
-            <option value="crate_magazine">Crate Magazine</option>
+            <select name="machine_type_id" class="border px-3 py-2 rounded w-full" required>
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}">
+                        {{ $type->name }}
+                    </option>
+                @endforeach
+
             </select>
         </div>
 

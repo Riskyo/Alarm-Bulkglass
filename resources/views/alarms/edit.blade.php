@@ -17,20 +17,17 @@
     <form action="{{ route('alarms.update',$alarm) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf @method('PUT')
 
-        {{-- Machine Type --}}
         <div>
             <label class="block mb-1 font-medium">Machine Type</label>
-            <select name="machine_type" class="border rounded w-full px-3 py-2" required>
-            <option value="bulkglass" {{ $alarm->machine_type=='bulkglass'?'selected':'' }}>Bulkglass</option>
-            <option value="depalletiser" {{ $alarm->machine_type=='depalletiser'?'selected':'' }}>Depalletiser</option>
-            <option value="robocolumn" {{ $alarm->machine_type=='robocolumn'?'selected':'' }}>Robocolumn</option>
-            <option value="incarobot" {{ $alarm->machine_type=='incarobot'?'selected':'' }}>Incarobot</option>
-            <option value="paletizer" {{ $alarm->machine_type=='paletizer'?'selected':'' }}>Paletizer</option>
-            <option value="conveyor_b23" {{ $alarm->machine_type=='conveyor_b23'?'selected':'' }}>Conveyor B23</option>
-            <option value="conveyor_b17" {{ $alarm->machine_type=='conveyor_b17'?'selected':'' }}>Conveyor B17</option>
-            <option value="packer" {{ $alarm->machine_type=='packer'?'selected':'' }}>Packer</option>
-            <option value="unpacker" {{ $alarm->machine_type=='unpacker'?'selected':'' }}>Unpacker</option>
-            <option value="crate_magazine" {{ $alarm->machine_type=='crate_magazine'?'selected':'' }}>Crate Magazine</option>
+            <select name="machine_type_id" class="border rounded w-full px-3 py-2" required>
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}"
+                        {{ $alarm->machine_type_id == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
+                    </option>
+                @endforeach
+
             </select>
         </div>
 

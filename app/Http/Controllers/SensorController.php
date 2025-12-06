@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Action;
+use App\Models\MachineType;
 use Illuminate\Http\Request;
 
 class SensorController extends Controller
@@ -15,21 +16,24 @@ class SensorController extends Controller
             'plc_io'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096'
         ]);
 
-        // Ambil machine_type dari alarm parent
-        $machine = $action->alarm->machine_type;
+        $machineTypeId = $action->machine_type_id;
+
+        // Ambil nama mesin untuk penempatan folder
+        $machineName = MachineType::find($machineTypeId)->name;
 
         $komponenPath = $request->file('komponen')
-                        ? $request->file('komponen')->store("$machine/komponen", 'public')
-                        : null;
+            ? $request->file('komponen')->store("$machineName/komponen", 'public')
+            : null;
 
         $plcPath = $request->file('plc_io')
-                  ? $request->file('plc_io')->store("$machine/plc_io", 'public')
-                  : null;
+            ? $request->file('plc_io')->store("$machineName/plc_io", 'public')
+            : null;
 
         $action->sensors()->create([
-            'sensor_name' => $request->sensor_name,
-            'komponen'    => $komponenPath,
-            'plc_io'      => $plcPath,
+            'sensor_name'     => $request->sensor_name,
+            'komponen'        => $komponenPath,
+            'plc_io'          => $plcPath,
+            'machine_type_id' => $machineTypeId,
         ]);
 
         return back()->with('success','Sensor ditambahkan');

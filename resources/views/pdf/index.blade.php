@@ -19,19 +19,17 @@
         <form method="GET"
               class="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 w-full max-w-3xl mx-auto mb-6">
 
-            <select name="machine_type"
+              <select name="machine_type_id"
                 class="border rounded-full shadow px-4 py-3 bg-white text-lg pr-10 w-full sm:w-auto">
+
                 <option value="">All Machine</option>
-                <option value="bulkglass" {{ request('machine_type')=='bulkglass'?'selected':'' }}>Bulkglass</option>
-                <option value="depalletiser" {{ request('machine_type')=='depalletiser'?'selected':'' }}>Depalletiser</option>
-                <option value="robocolumn" {{ request('machine_type')=='robocolumn'?'selected':'' }}>Robocolumn</option>
-                <option value="incarobot" {{ request('machine_type')=='incarobot'?'selected':'' }}>Incarobot</option>
-                <option value="paletizer" {{ request('machine_type')=='paletizer'?'selected':'' }}>Paletizer</option>
-                <option value="conveyor_b23" {{ request('machine_type')=='conveyor_b23'?'selected':'' }}>Conveyor B23</option>
-                <option value="conveyor_b17" {{ request('machine_type')=='conveyor_b17'?'selected':'' }}>Conveyor B17</option>
-                <option value="packer" {{ request('machine_type')=='packer'?'selected':'' }}>Packer</option>
-                <option value="unpacker" {{ request('machine_type')=='unpacker'?'selected':'' }}>Unpacker</option>
-                <option value="crate_magazine" {{ request('machine_type')=='crate_magazine'?'selected':'' }}>Crate Magazine</option>
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}"
+                        {{ request('machine_type_id') == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
+                    </option>
+                @endforeach
 
             </select>
 
@@ -73,7 +71,7 @@
 
                         {{-- Machine --}}
                         <td class="p-2 border">
-                            {{ ucfirst($pdf->machine_type) }}
+                        {{ $pdf->machineType?->name ?? '-' }}
                         </td>
 
                         {{-- Title --}}
@@ -172,7 +170,7 @@ window.addEventListener('load', function() {
     });
 
     // 🔹 STEP 2 — Dropdown Machine Type
-    addStepIf('select[name=machine_type]', {
+    addStepIf('select[name=machine_type_id]', {
         title: 'Filter Mesin 🏭',
         text: 'Gunakan dropdown ini untuk memfilter PDF berdasarkan mesin Bulkglass atau Depalletiser.',
         attachTo: { on: 'bottom' },

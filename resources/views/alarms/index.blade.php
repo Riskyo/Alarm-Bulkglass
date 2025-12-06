@@ -13,6 +13,11 @@
     {{-- ========================================================= --}}
     @if(empty($search))
     <div class="flex flex-col items-center justify-start min-h-screen px-4 pt-20">
+    @if(session('success'))
+    <div class="pt-6 bg-green-100 border border-green-300 text-green-800 rounded mb-4 shadow text-center animate-fade">
+        {{ session('success') }}
+    </div>
+    @endif
         <h1 class="text-4xl font-bold mb-8 text-center">Cari Kode Alarm</h1>
 
         <form action="{{ route('alarms.index') }}" method="GET"
@@ -27,40 +32,19 @@
                        class="flex-grow px-3 py-2 focus:outline-none text-lg rounded-full">
             </div>
 
-            <select name="machine_type"
+            <select name="machine_type_id"
                 class="border px-4 py-3 rounded-full shadow bg-white text-lg pr-10">
-                    <option value="">All Machine</option>
-                    <option value="depalletiser" {{ request('machine_type')=='depalletiser' ? 'selected' : '' }}>
-                        Depalletiser
+
+                <option value="">All Machine</option>
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}"
+                        {{ request('machine_type_id') == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
                     </option>
-                    <option value="bulkglass" {{ request('machine_type')=='bulkglass' ? 'selected' : '' }}>
-                        Bulkglass
-                    </option>
-                    <option value="robocolumn" {{ request('machine_type')=='robocolumn' ? 'selected' : '' }}>
-                        Robocolumn
-                    </option>
-                    <option value="incarobot" {{ request('machine_type')=='incarobot' ? 'selected' : '' }}>
-                        Incarobot
-                    </option>
-                    <option value="paletizer" {{ request('machine_type')=='paletizer' ? 'selected' : '' }}>
-                        Paletizer
-                    </option>
-                    <option value="conveyor_b23" {{ request('machine_type')=='conveyor_b23' ? 'selected' : '' }}>
-                        Conveyor B23
-                    </option>
-                    <option value="conveyor_b17" {{ request('machine_type')=='conveyor_b17' ? 'selected' : '' }}>
-                        Conveyor B17
-                    </option>
-                    <option value="packer" {{ request('machine_type')=='packer' ? 'selected' : '' }}>
-                        Packer
-                    </option>
-                    <option value="unpacker" {{ request('machine_type')=='unpacker' ? 'selected' : '' }}>
-                        Unpacker
-                    </option>
-                    <option value="crate_magazine" {{ request('machine_type')=='crate_magazine' ? 'selected' : '' }}>
-                        Crate Magazine
-                    </option>
+                @endforeach
             </select>
+
 
             {{-- Tombol Search --}}
             <button type="submit"
@@ -116,39 +100,17 @@
                        class="flex-grow px-3 py-2 focus:outline-none text-lg rounded-full">
             </div>
 
-            <select name="machine_type"
+            <select name="machine_type_id"
                 class="border px-4 py-3 rounded-full shadow bg-white text-lg pr-10">
-                    <option value="">All Machine</option>
-                    <option value="depalletiser" {{ request('machine_type')=='depalletiser' ? 'selected' : '' }}>
-                        Depalletiser
+
+                <option value="">All Machine</option>
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}"
+                        {{ request('machine_type_id') == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
                     </option>
-                    <option value="bulkglass" {{ request('machine_type')=='bulkglass' ? 'selected' : '' }}>
-                        Bulkglass
-                    </option>
-                    <option value="robocolumn" {{ request('machine_type')=='robocolumn' ? 'selected' : '' }}>
-                        Robocolumn
-                    </option>
-                    <option value="incarobot" {{ request('machine_type')=='incarobot' ? 'selected' : '' }}>
-                        Incarobot
-                    </option>
-                    <option value="paletizer" {{ request('machine_type')=='paletizer' ? 'selected' : '' }}>
-                        Paletizer
-                    </option>
-                    <option value="conveyor_b23" {{ request('machine_type')=='conveyor_b23' ? 'selected' : '' }}>
-                        Conveyor B23
-                    </option>
-                    <option value="conveyor_b17" {{ request('machine_type')=='conveyor_b17' ? 'selected' : '' }}>
-                        Conveyor B17
-                    </option>
-                    <option value="packer" {{ request('machine_type')=='packer' ? 'selected' : '' }}>
-                        Packer
-                    </option>
-                    <option value="unpacker" {{ request('machine_type')=='unpacker' ? 'selected' : '' }}>
-                        Unpacker
-                    </option>
-                    <option value="crate_magazine" {{ request('machine_type')=='crate_magazine' ? 'selected' : '' }}>
-                        Crate Magazine
-                    </option>
+                @endforeach
             </select>
 
             <button type="submit"
@@ -200,7 +162,7 @@
                     {{-- Jika tidak ada action --}}
                     <tr>
                         <td class="p-2 border text-center">{{ $alarm->code_alarm }}</td>
-                        <td class="p-2 border text-center">{{ ucfirst($alarm->machine_type) }}</td> {{-- ⭐ Baru --}}
+                        <td class="p-2 border text-center">{{ $alarm->machineType?->name ?? '-' }}</td> {{-- ⭐ Baru --}}
                         <td class="p-2 border">{{ $alarm->description }}</td>
                         <td class="p-2 border text-center">{{ $alarm->step }}</td>
                         <td class="p-2 border text-gray-400" colspan="4">Belum ada action</td>
@@ -234,7 +196,7 @@
 
                                         {{-- ⭐ Machine Type --}}
                                         <td class="p-2 border text-center" rowspan="{{ $rowspan }}">
-                                            {{ ucfirst($alarm->machine_type) }}
+                                            {{ $alarm->machineType?->name ?? '-' }}
                                         </td>
 
                                         {{-- Description --}}
@@ -355,7 +317,7 @@ window.addEventListener('load', function() {
     });
 
     // ⭐⭐⭐ NEW STEP — Kolom Machine Type
-    addStepIf('select[name=machine_type]', {
+    addStepIf('select[name=machine_type_id]', {
         title: 'Pilih Jenis Mesin 🏭',
         text: 'Gunakan dropdown ini untuk memfilter alarm berdasarkan mesin: Bulkglass atau Depalletiser.',
         attachTo: { on: 'bottom' },

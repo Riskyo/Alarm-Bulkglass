@@ -29,6 +29,8 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     // CRUD alarm kecuali index & show
     Route::resource('alarms', AlarmController::class)->except(['index', 'show']);
 
+    Route::resource('machine-types', \App\Http\Controllers\MachineTypeController::class);
+
     // nested: tambah action baru pada alarm tertentu
     Route::post('alarms/{alarm}/actions', [ActionController::class, 'store'])
          ->name('actions.store');

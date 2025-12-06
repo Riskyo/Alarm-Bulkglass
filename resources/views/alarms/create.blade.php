@@ -17,22 +17,19 @@
     <form action="{{ route('alarms.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
-        {{-- Machine Type --}}
         <div>
             <label class="block mb-1 font-medium">Machine Type</label>
-            <select name="machine_type" class="border rounded w-full px-3 py-2" required>
-                <option value="bulkglass" selected>Bulkglass</option>
-                <option value="depalletiser">Depalletiser</option>
-                <option value="robocolumn">Robocolumn</option>
-                <option value="incarobot">Incarobot</option>
-                <option value="paletizer">Paletizer</option>
-                <option value="conveyor_b23">Conveyor B23</option>
-                <option value="conveyor_b17">Conveyor B17</option>
-                <option value="packer">Packer</option>
-                <option value="unpacker">Unpacker</option>
-                <option value="crate_magazine">Crate Magazine</option>
+            <select name="machine_type_id" class="border rounded w-full px-3 py-2" required>
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}">
+                        {{ $type->name }}
+                    </option>
+                @endforeach
+
             </select>
         </div>
+
 
         {{-- Code Alarm --}}
         <div>

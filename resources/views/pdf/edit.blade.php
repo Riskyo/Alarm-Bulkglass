@@ -12,17 +12,14 @@
 
         <div>
             <label class="font-medium">Machine Type</label>
-            <select name="machine_type" class="border px-3 py-2 rounded w-full">
-            <option value="bulkglass" {{ $pdf->machine_type=='bulkglass'?'selected':'' }}>Bulkglass</option>
-            <option value="depalletiser" {{ $pdf->machine_type=='depalletiser'?'selected':'' }}>Depalletiser</option>
-            <option value="robocolumn" {{ $pdf->machine_type=='robocolumn'?'selected':'' }}>Robocolumn</option>
-            <option value="incarobot" {{ $pdf->machine_type=='incarobot'?'selected':'' }}>Incarobot</option>
-            <option value="paletizer" {{ $pdf->machine_type=='paletizer'?'selected':'' }}>Paletizer</option>
-            <option value="conveyor_b23" {{ $pdf->machine_type=='conveyor_b23'?'selected':'' }}>Conveyor B23</option>
-            <option value="conveyor_b17" {{ $pdf->machine_type=='conveyor_b17'?'selected':'' }}>Conveyor B17</option>
-            <option value="packer" {{ $pdf->machine_type=='packer'?'selected':'' }}>Packer</option>
-            <option value="unpacker" {{ $pdf->machine_type=='unpacker'?'selected':'' }}>Unpacker</option>
-            <option value="crate_magazine" {{ $pdf->machine_type=='crate_magazine'?'selected':'' }}>Crate Magazine</option>
+            <select name="machine_type_id" class="border px-3 py-2 rounded w-full">
+
+                @foreach($machineTypes as $type)
+                    <option value="{{ $type->id }}"
+                        {{ $pdf->machine_type_id == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
+                    </option>
+                @endforeach
 
             </select>
         </div>

@@ -9,7 +9,7 @@ class Action extends Model
     protected $fillable = [
         'alarm_id',
         'action_text',
-        'machine_type',
+        'machine_type_id',
     ];
 
     public function alarm()
@@ -20,5 +20,10 @@ class Action extends Model
     public function sensors()
     {
         return $this->hasMany(Sensor::class);
+    }
+
+    public function machineType()
+    {
+        return $this->belongsTo(MachineType::class, 'machine_type_id');
     }
 }

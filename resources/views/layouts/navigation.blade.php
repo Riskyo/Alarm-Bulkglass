@@ -3,7 +3,9 @@
     $hideTutorial = request()->is('alarms/create')
                     || request()->is('alarms/*/edit')
                     || request()->is('pdf/create')
-                    || request()->is('pdf/*/edit');
+                    || request()->is('pdf/*/edit')
+                    || request()->is('machine-types/create')
+                    || request()->is('machine-types/*/edit');
 @endphp
 
 <nav class="bg-white border-b border-gray-100">
@@ -25,6 +27,13 @@
                         class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
                         List PDF
                     </a>
+
+                    @can('isAdmin')
+                        <a href="{{ route('machine-types.index') }}"
+                            class="text-gray-700 hover:text-blue-600 font-medium text-sm transition">
+                            Tambah Kategori
+                        </a>
+                    @endcan
 
                     <!-- ⬅️ Show Tutorial hanya tampil jika bukan create/edit -->
                     @unless($hideTutorial)
@@ -96,6 +105,13 @@
                 class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
                 List PDF
             </a>
+
+            @can('isAdmin')
+                <a href="{{ route('machine-types.index') }}"
+                    class="block px-4 py-2 text-gray-700 font-medium text-sm hover:text-blue-600">
+                    Tambah Kategori
+                </a>
+            @endcan
 
             <!-- Show Tutorial kecuali create/edit -->
             @unless($hideTutorial)
